@@ -29,12 +29,6 @@ class AirCargoProblem(Problem):
         """
         self.state_map = initial.pos + initial.neg
         self.initial_state_TF = encode_state(initial, self.state_map)
-        print ('==================================')
-        print ('self.state_map', self.state_map)
-        print ('self.initial_state_TF', self.initial_state_TF, initial)
-        print ('initial.sentence() ', initial.sentence())
-        print ('initial.pos_sentence', initial.pos_sentence())
-        print ('==================================')
         Problem.__init__(self, self.initial_state_TF, goal=goal)
         self.cargos = cargos
         self.planes = planes
@@ -218,6 +212,10 @@ class AirCargoProblem(Problem):
         """
         # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
         count = 0
+        decoded_state = decode_state(node.state, self.state_map)
+        for fluent in self.goal:
+            if fluent not in decoded_state.pos:
+                count += 1
         return count
 
 
