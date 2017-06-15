@@ -283,7 +283,7 @@ class PlanningGraph():
 
         # continue to build the graph alternating A, S levels until last two S levels contain the same literals,
         # i.e. until it is "leveled"
-        while not leveled and level < 3:
+        while not leveled:
             self.add_action_level(level)
             self.update_a_mutex(self.a_levels[level])
             
@@ -310,32 +310,16 @@ class PlanningGraph():
         #   set iff all prerequisite literals for the action hold in S0.  This can be accomplished by testing
         #   to see if a proposed PgNode_a has prenodes that are a subset of the previous S level.  Once an
         #   action node is added, it MUST be connected to the S node instances in the appropriate s_level set.
-        print ('**********************************************', level)
         self.a_levels.append(set())
-        i = 0
         for action in self.all_actions:
-            i += 1
             node_a = PgNode_a(action)
-            print ('==================')
-            print (i, action)
-            node_a.show()
-            for node_s in node_a.prenodes:
-                print ('2 prenode')
-                node_s.show()
-                if node_s in self.s_levels[level]:
-                    print ('3 true for node s')  
-            if node_a.prenodes in self.s_levels[level]:
-                print ('4 true')
             prenodes_set = set(node_a.prenodes)
             s_level_set = set(self.s_levels[level])
             if prenodes_set < s_level_set:
-                print ('5, true')
                 self.a_levels[level].add(node_a)
                 for node_s in s_level_set.intersection(prenodes_set):
-                    print ("6 adding")
-                    node_s.show()
                     node_s.children.add(node_a)
-            print ('==================')
+                    node_a.parents.add(node_s)
             
 
     def add_literal_level(self, level):
@@ -356,6 +340,14 @@ class PlanningGraph():
         #   all of the new S nodes as children of all the A nodes that could produce them, and likewise add the A nodes to the
         #   parent sets of the S nodes
         self.s_levels.append(set())
+        for node_a in self.a_levels[level - 1 ]:
+            for node_s in node_a.effnodes:
+                if node_s not in self.s_levels[level]:
+                    self.s_levels[level].add(node_s)
+                node_s.parents.add(node_a)
+                node_a.children.add(node_s)
+        
+        
 
     def update_a_mutex(self, nodeset):
         """ Determine and update sibling mutual exclusion for A-level nodes
