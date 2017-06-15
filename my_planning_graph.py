@@ -39,6 +39,12 @@ class PgNode():
         print("{} parents".format(len(self.parents)))
         print("{} children".format(len(self.children)))
         print("{} mutex".format(len(self.mutex)))
+        
+    def get_parents_mutex(self) -> set:
+        mutexes = set()
+        for p in self.parents:
+            mutexes.update(p.mutex)
+        return mutexes
 
 
 class PgNode_s(PgNode):
@@ -438,6 +444,8 @@ class PlanningGraph():
             return True        
         return False
 
+
+        
     def competing_needs_mutex(self, node_a1: PgNode_a, node_a2: PgNode_a) -> bool:
         """
         Test a pair of actions for mutual exclusion, returning True if one of
@@ -448,8 +456,14 @@ class PlanningGraph():
         :param node_a2: PgNode_a
         :return: bool
         """
-
         # TODO test for Competing Needs between nodes
+        a1_pm = node_a1.get_parents_mutex()
+        a2_pm = node_a2.get_parents_mutex()
+        
+        if (node_a2.parents <= a1_pm):
+            return True
+        if (node_a1.parents <= a2_pm):
+            return True
         return False
 
     def update_s_mutex(self, nodeset: set):
@@ -485,7 +499,8 @@ class PlanningGraph():
         :return: bool
         """
         # TODO test for negation between nodes
-        return False
+        return node_s1.is_pos != node_s2.is_pos and node_s1.symbol == node_s2.symbol
+#        return False
 
     def inconsistent_support_mutex(self, node_s1: PgNode_s, node_s2: PgNode_s):
         """
