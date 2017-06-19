@@ -12,25 +12,25 @@ from my_planning_graph import (
 )
 
 
-#class TestPlanningGraphLevels(unittest.TestCase):
-#    def setUp(self):
-#        self.p = have_cake()
-#        self.pg = PlanningGraph(self.p, self.p.initial)
-#
-#    def test_add_action_level(self):
-#        # for level, nodeset in enumerate(self.pg.a_levels):
-#        #     for node in nodeset:
-#        #         print("Level {}: {}{})".format(level, node.action.name, node.action.args))
-#        self.assertEqual(len(self.pg.a_levels[0]), 3, len(self.pg.a_levels[0]))
-#        self.assertEqual(len(self.pg.a_levels[1]), 6, len(self.pg.a_levels[1]))
-#
-#    def test_add_literal_level(self):
-#        # for level, nodeset in enumerate(self.pg.s_levels):
-#        #     for node in nodeset:
-#        #         print("Level {}: {})".format(level, node.literal))
-#        self.assertEqual(len(self.pg.s_levels[0]), 2, len(self.pg.s_levels[0]))
-#        self.assertEqual(len(self.pg.s_levels[1]), 4, len(self.pg.s_levels[1]))
-#        self.assertEqual(len(self.pg.s_levels[2]), 4, len(self.pg.s_levels[2]))
+class TestPlanningGraphLevels(unittest.TestCase):
+    def setUp(self):
+        self.p = have_cake()
+        self.pg = PlanningGraph(self.p, self.p.initial)
+
+    def test_add_action_level(self):
+        # for level, nodeset in enumerate(self.pg.a_levels):
+        #     for node in nodeset:
+        #         print("Level {}: {}{})".format(level, node.action.name, node.action.args))
+        self.assertEqual(len(self.pg.a_levels[0]), 3, len(self.pg.a_levels[0]))
+        self.assertEqual(len(self.pg.a_levels[1]), 6, len(self.pg.a_levels[1]))
+
+    def test_add_literal_level(self):
+        # for level, nodeset in enumerate(self.pg.s_levels):
+        #     for node in nodeset:
+        #         print("Level {}: {})".format(level, node.literal))
+        self.assertEqual(len(self.pg.s_levels[0]), 2, len(self.pg.s_levels[0]))
+        self.assertEqual(len(self.pg.s_levels[1]), 4, len(self.pg.s_levels[1]))
+        self.assertEqual(len(self.pg.s_levels[2]), 4, len(self.pg.s_levels[2]))
 
 
 class TestPlanningGraphMutex(unittest.TestCase):
@@ -115,13 +115,13 @@ class TestPlanningGraphMutex(unittest.TestCase):
             "If one parent action can achieve both states, should NOT be inconsistent-support mutex, even if parent actions are themselves mutex")
 
 
-#class TestPlanningGraphHeuristics(unittest.TestCase):
-#    def setUp(self):
-#        self.p = have_cake()
-#        self.pg = PlanningGraph(self.p, self.p.initial)
-#
-#    def test_levelsum(self):
-#        self.assertEqual(self.pg.h_levelsum(), 1)
+class TestPlanningGraphHeuristics(unittest.TestCase):
+    def setUp(self):
+        self.p = have_cake()
+        self.pg = PlanningGraph(self.p, self.p.initial)
+
+    def test_levelsum(self):
+        self.assertEqual(self.pg.h_levelsum(), 1)
 
 
 if __name__ == '__main__':
