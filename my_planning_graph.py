@@ -517,8 +517,17 @@ class PlanningGraph():
         :param node_s2: PgNode_s
         :return: bool
         """
+        s1_actions = node_s1.parents
+        s2_actions = node_s2.parents
+        mutex =  False
+        for a1 in s1_actions:
+            for a2 in s2_actions:
+                mutex =  a1.is_mutex(a2)
+                if not mutex:
+                    # we have found not mutex actions
+                    return False
         # TODO test for Inconsistent Support between nodes
-        return False
+        return mutex
 
     def h_levelsum(self) -> int:
         """The sum of the level costs of the individual goals (admissible if goals independent)
