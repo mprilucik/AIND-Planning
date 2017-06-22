@@ -66,10 +66,17 @@ class AirCargoProblem(Problem):
             for c in self.cargos:
                 for a in self.airports:
                     for p in self.planes:
+                        # for all cargos, airports and planes
+                        
+                        # cargo and plane is At the airport
                         precond_pos = [expr("At({}, {})".format(c, a)),
                                        expr("At({}, {})".format(p, a))]
                         precond_neg = []
+                        
+                        # effect is that cargo is In plane
                         effect_add = [expr("In({}, {})".format(c, p))]
+                        
+                        # remove effect is that cargo is not At airoprt any more
                         effect_rem = [expr("At({}, {})".format(c, a))]
                         load = Action(expr("Load({}, {}, {})".format(c, p, a)),
                                      [precond_pos, precond_neg],
@@ -89,10 +96,17 @@ class AirCargoProblem(Problem):
             for c in self.cargos:
                 for a in self.airports:
                     for p in self.planes:
+                        # for all cargos, airports and planes
+                        
+                        # cargo in In plane and plane is At the airport
                         precond_pos = [expr("In({}, {})".format(c, p)),
                                        expr("At({}, {})".format(p, a))]
                         precond_neg = []
+                        
+                        # effect is that cargo is At plane
                         effect_add = [expr("At({}, {})".format(c, a))]
+                        
+                        # remove effect is that cargo is not In plane any more
                         effect_rem = [expr("In({}, {})".format(c, p))]
                         unload = Action(expr("Unload({}, {}, {})".format(c, p, a)),
                                      [precond_pos, precond_neg],
@@ -133,15 +147,19 @@ class AirCargoProblem(Problem):
         """
         # TODO implement
         possible_actions = []
+        # create and initiate KB
         kb = PropKB()
         kb.tell(decode_state(state, self.state_map).pos_sentence())
+        
         for action in self.actions_list:
             is_possible = True
             for clause in action.precond_pos:
                 if clause not in kb.clauses:
+                    # not possible if pos preconds are not in KB
                     is_possible = False
             for clause in action.precond_neg:
                 if clause in kb.clauses:
+                    # not possible if neg preconds are in KB
                     is_possible = False
             if is_possible:
                 possible_actions.append(action)
@@ -159,17 +177,22 @@ class AirCargoProblem(Problem):
         # TODO implement
         new_state = FluentState([], [])
         old_state = decode_state(state, self.state_map)
+        
         for fluent in old_state.pos:
             if fluent not in action.effect_rem:
+                # append fluent if pos effect is not removed by action
                 new_state.pos.append(fluent)
         for fluent in action.effect_add:
             if fluent not in new_state.pos:
+                # append fluent if it is  action effect
                 new_state.pos.append(fluent)
         for fluent in old_state.neg:
             if fluent not in action.effect_add:
+                # append fluent if neg effect is not added by action
                 new_state.neg.append(fluent)
         for fluent in action.effect_rem:
             if fluent not in new_state.neg:
+                # append fluent if action removes it
                 new_state.neg.append(fluent)        
         return encode_state(new_state, self.state_map)
 
@@ -215,6 +238,7 @@ class AirCargoProblem(Problem):
         decoded_state = decode_state(node.state, self.state_map)
         for fluent in self.goal:
             if fluent not in decoded_state.pos:
+                # cout every goal that is not in the state
                 count += 1
         return count
 

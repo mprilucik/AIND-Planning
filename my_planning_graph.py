@@ -41,6 +41,9 @@ class PgNode():
         print("{} mutex".format(len(self.mutex)))
         
     def get_parents_mutex(self) -> set:
+        """
+        return super set of parents mutexes
+        """
         mutexes = set()
         for p in self.parents:
             mutexes.update(p.mutex)
@@ -322,8 +325,10 @@ class PlanningGraph():
             prenodes_set = set(node_a.prenodes)
             s_level_set = set(self.s_levels[level])
             if prenodes_set < s_level_set:
+                # prenodes that are a subset of the previous S level
                 self.a_levels[level].add(node_a)
                 for node_s in s_level_set.intersection(prenodes_set):
+                    # connect the nodes
                     node_s.children.add(node_a)
                     node_a.parents.add(node_s)
             
@@ -348,8 +353,10 @@ class PlanningGraph():
         self.s_levels.append(set())
         for node_a in self.a_levels[level - 1 ]:
             for node_s in node_a.effnodes:
+                # for the action effect add the node if not already there
                 if node_s not in self.s_levels[level]:
                     self.s_levels[level].add(node_s)
+                # connect the nodes
                 node_s.parents.add(node_a)
                 node_a.children.add(node_s)
         
@@ -415,8 +422,10 @@ class PlanningGraph():
         a1 = node_a1.action
         a2 = node_a2.action
         if set(a1.effect_add) <= set(a2.effect_rem):
+            # adding effect is subset of effects to remove
             return True
         if set(a2.effect_add) <= set(a1.effect_rem):
+            # adding effect is subset of effects to remove
             return True
         
         return False
@@ -439,8 +448,10 @@ class PlanningGraph():
         a1 = node_a1.action
         a2 = node_a2.action
         if set(a1.effect_add) <= set(a2.precond_neg):
+            # adding effect is subset of negative preconditions
             return True
         if set(a2.effect_add) <= set(a1.precond_neg):
+            # adding effect is subset of negative preconditions
             return True        
         return False
 
@@ -457,12 +468,16 @@ class PlanningGraph():
         :return: bool
         """
         # TODO test for Competing Needs between nodes
+        
+        # get set of mutexes for all the parents
         a1_pm = node_a1.get_parents_mutex()
         a2_pm = node_a2.get_parents_mutex()
         
         if (node_a2.parents <= a1_pm):
+            # if a2 parents are subset of a1 parent mutexes
             return True
         if (node_a1.parents <= a2_pm):
+            # if a1 parents are subset of a2 parent mutexes
             return True
         return False
 
@@ -517,6 +532,7 @@ class PlanningGraph():
         :param node_s2: PgNode_s
         :return: bool
         """
+        # TODO test for Inconsistent Support between nodes
         s1_actions = node_s1.parents
         s2_actions = node_s2.parents
         mutex =  False
@@ -526,7 +542,6 @@ class PlanningGraph():
                 if not mutex:
                     # we have found not mutex actions
                     return False
-        # TODO test for Inconsistent Support between nodes
         return mutex
 
     def h_levelsum(self) -> int:
@@ -535,19 +550,20 @@ class PlanningGraph():
         :return: int
         """
         level_sum = 0
+        # TODO implement
+        # for each goal in the problem, determine the level cost, then add them together        
+
         # copy the goal
         goal = set(self.problem.goal)
         for level in range(len(self.s_levels)):
             if not goal:
-                # break f we have found all the goals 
+                # break if we have found all the goals 
                 break            
             for node_s in self.s_levels[level]:
                 if node_s.is_pos and node_s.symbol in goal:
                     level_sum += level
                     goal.remove(node_s.symbol)
                 if not goal:
-                    # break f we have found all the goals 
+                    # break if we have found all the goals 
                     break
-        # TODO implement
-        # for each goal in the problem, determine the level cost, then add them together
         return level_sum
